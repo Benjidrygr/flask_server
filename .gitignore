@@ -1,0 +1,370 @@
+# ===========================================
+# ARCHIVOS SENSIBLES Y CREDENCIALES
+# ===========================================
+
+# Variables de entorno y archivos de configuración sensibles
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.staging
+*.env
+config.ini
+secrets.json
+credentials.json
+aws-credentials.json
+
+# Archivos de configuración que pueden contener secretos
+*_config.py
+*_secrets.py
+*_credentials.py
+*_keys.py
+*_tokens.py
+
+# ===========================================
+# PYTHON
+# ===========================================
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
+#   However, in case of collaboration, if having platform-specific dependencies or dependencies
+#   having no cross-platform support, pipenv may install dependencies that don't work, or not
+#   install all needed dependencies.
+#Pipfile.lock
+
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# ===========================================
+# ARCHIVOS DE DATOS Y CACHE
+# ===========================================
+
+# Archivos de datos grandes
+*.npy
+*.npz
+*.pkl
+*.pickle
+*.h5
+*.hdf5
+*.parquet
+
+# Cache de datos
+distance_cache_global.npy
+*.cache
+cache/
+.cache/
+
+# Videos y archivos multimedia grandes
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.wmv
+*.flv
+*.webm
+*.m4v
+videos/
+data/aws_kinesis_videos/
+data/downloaded_videos/
+
+# Imágenes grandes
+*.tif
+*.tiff
+*.tga
+*.bmp
+*.raw
+
+# ===========================================
+# MODELOS Y PESOS DE IA
+# ===========================================
+
+# Modelos de machine learning
+*.pt
+*.pth
+*.onnx
+*.pb
+*.h5
+*.pkl
+*.joblib
+*.model
+
+# Pesos de modelos
+weights/
+models/
+checkpoints/
+*.weights
+*.bin
+
+# ===========================================
+# ARCHIVOS TEMPORALES Y LOGS
+# ===========================================
+
+# Logs
+*.log
+logs/
+log/
+
+# Archivos temporales
+*.tmp
+*.temp
+temp/
+tmp/
+
+# Archivos de sistema
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ===========================================
+# IDEs Y EDITORES
+# ===========================================
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ===========================================
+# DOCKER Y CONTAINERS
+# ===========================================
+
+# Docker
+Dockerfile.local
+docker-compose.override.yml
+.dockerignore
+
+# ===========================================
+# CELERY Y REDIS
+# ===========================================
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+celerybeat.db
+
+# Redis
+dump.rdb
+*.rdb
+
+# ===========================================
+# ARCHIVOS DE CONFIGURACIÓN ESPECÍFICOS
+# ===========================================
+
+# Archivos de configuración que pueden contener secretos
+config_local.py
+settings_local.py
+local_config.py
+production_config.py
+staging_config.py
+
+# Archivos de API keys
+api_keys.py
+secrets_config.py
+credentials_config.py
+
+# ===========================================
+# RESULTADOS Y OUTPUTS
+# ===========================================
+
+# Directorios de resultados
+results/
+output/
+outputs/
+output_videos/
+visualized_videos/
+detection_results/
+processing_results/
+
+# Archivos de resultados
+*.json
+!requirements*.json
+!package*.json
+
+# ===========================================
+# ARCHIVOS DE BACKUP
+# ===========================================
+
+# Backups
+*.bak
+*.backup
+backup/
+backups/
+
+# ===========================================
+# ARCHIVOS ESPECÍFICOS DEL PROYECTO
+# ===========================================
+
+# Archivos específicos que contienen secretos
+data_extraction/video_donwload/video_config.py
+data_extraction/video_donwload/aws_video_downloader.py
+
+# Directorios de datos sensibles
+data/aws_kinesis_videos/
+data/downloaded_videos/
+data/private/
+data/sensitive/
+
+# Archivos de configuración de YOLO que pueden contener rutas sensibles
+yolo/weights/
+yolo/results/
+yolo/output/
+
+# ===========================================
+# NOTAS DE SEGURIDAD
+# ===========================================
+
+# IMPORTANTE: Los siguientes archivos contenían secretos y fueron removidos:
+# - data_extraction/video_donwload/video_config.py (contiene AWS credentials)
+# - data_extraction/video_donwload/aws_video_downloader.py (usa las credentials)
+
+# Para usar estos archivos, crear versiones con variables de entorno:
+# - video_config_template.py (sin secretos)
+# - .env.example (plantilla de variables de entorno)

@@ -1,0 +1,22 @@
+Suda america: 
+// Región: Sudamérica aprox.
+var region = ee.Geometry.Rectangle([-90, -60, -30, 15]);
+
+North America:
+var regionNA = ee.Geometry.Rectangle([-170, 10, -50, 83]);
+Groelandia y ártico// Región: Groenlandia y Ártico oriental
+var regionGL = ee.Geometry.Rectangle([-80, 50, -5, 90]);
+
+Europe and mares adyacentes
+// Región: Europa + mares adyacentes
+var regionEU = ee.Geometry.Rectangle([-35, 30, 45, 75]);
+
+
+Africa
+var regionAF = ee.Geometry.Rectangle([-25, -40, 60, 38]);
+ASIA
+var regionAS = ee.Geometry.Rectangle([25, -12, 180, 75]);
+
+Oceania
+// Región: Oceanía (Australia, Nueva Zelanda, Pacífico occidental)
+var regionOC = ee.Geometry.Rectangle([110, -50, 180, 10]);

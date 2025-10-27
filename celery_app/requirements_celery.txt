@@ -1,0 +1,53 @@
+# Dependencias para el servidor Celery YOLO
+# Instalar con: pip install -r requirements_celery.txt
+
+# Celery y dependencias principales
+celery==5.3.4
+kombu==5.3.4
+billiard==4.2.0
+vine==5.1.0
+
+# Broker y backend (Redis)
+redis==5.0.1
+
+# Monitor web para Celery
+flower==2.0.1
+
+# Dependencias existentes del proyecto YOLO
+ultralytics==8.3.101
+torch>=2.0.0
+torchvision>=0.15.0
+numpy==1.24.0
+opencv-python==4.11.0.86
+psutil>=5.9.0
+filterpy==1.4.5
+scipy>=1.7.0
+matplotlib>=3.5.0
+scikit-image>=0.19.0
+
+# Dependencias adicionales para Celery
+pytz==2023.3
+python-dateutil==2.8.2
+
+# Notas de instalación:
+# 1. Instalar Redis: 
+#    - macOS: brew install redis
+#    - Ubuntu: sudo apt install redis-server
+#    - Windows: Descargar desde https://redis.io/download
+#
+# 2. Iniciar Redis:
+#    - macOS/Linux: redis-server
+#    - Windows: redis-server.exe
+#
+# 3. Verificar Redis:
+#    redis-cli ping
+#
+# 4. Instalar dependencias:
+#    pip install -r requirements_celery.txt
+#
+# 5. Iniciar servidor Celery:
+#    python celery_server.py --worker
+#
+# 6. Iniciar monitor web (opcional):
+#    python celery_server.py --flower
+#    Luego abrir: http://localhost:5555
