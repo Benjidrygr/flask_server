@@ -759,6 +759,26 @@ class UnifiedDataProcessingPipeline:
             if trip_ids and len(trip_ids) > 0 and trip_ids[0].strip():
                 trip_id = trip_ids[0].strip()
                 specific_dir = os.path.join(base_download_dir, trip_id)
+                general_dir = os.path.join(base_download_dir, "general_download")
+                
+                # Crear directorio específico si no existe
+                os.makedirs(specific_dir, exist_ok=True)
+                
+                # Si hay archivos en general_download, moverlos al directorio específico
+                if os.path.exists(general_dir):
+                    general_files = glob.glob(os.path.join(general_dir, '*.mp4'))
+                    if general_files:
+                        print(f"🔄 Moviendo {len(general_files)} archivos de general_download a directorio específico del trip...")
+                        for file_path in general_files:
+                            filename = os.path.basename(file_path)
+                            dest_path = os.path.join(specific_dir, filename)
+                            try:
+                                import shutil
+                                shutil.move(file_path, dest_path)
+                                print(f"✅ Movido: {filename}")
+                            except Exception as e:
+                                print(f"⚠️ Error moviendo {filename}: {e}")
+                
                 download_dir = specific_dir
                 print(f"🔍 CORREGIDO: Usando directorio específico del trip: {download_dir}")
             else:
