@@ -27,6 +27,7 @@ class DistanceCalculator(BinaryClassifier):
         self._compute_distance_map()
     
     def _compute_distance_map(self):
+        """Computar mapa de distancias con file locking para thread-safety"""
         if self.cache_enabled and os.path.exists(self.cache_file):
             try:
                 print(f"Cargando cache de distancias: {self.cache_file}")
@@ -36,33 +37,65 @@ class DistanceCalculator(BinaryClassifier):
             except Exception as e:
                 print(f"⚠️  Error cargando cache: {e}")
         
+        # Usar file locking para evitar regeneración simultánea
+        self._compute_distance_map_safe()
+    
+    def _compute_distance_map_safe(self):
+        """Implementación thread-safe del cálculo del mapa de distancias"""
+        import fcntl
+        
+        lock_file = self.cache_file + '.lock'
+        
+        # Intentar adquirir lock exclusivo
         try:
-            print("Calculando mapa de distancias...")
-            # Crear máscara de agua (donde mask == 0, según convención: 0=agua, 1=tierra)
-            water_mask = (self.mask == 0).astype(np.uint8)
-            
-            # Calcular transformada de distancia euclidiana
-            distance_pixels = distance_transform_edt(water_mask)
-            
-            # Escalar para almacenamiento eficiente
-            distance_scaled = (distance_pixels * self.scale_factor).astype(np.uint16)
-            
-            # Poner 0 en tierra (donde mask == 1)
-            distance_scaled[self.mask == 1] = 0
-            
-            self.distance_map = distance_scaled
-            
-            if self.cache_enabled:
+            with open(lock_file, 'w') as lock:
+                fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                
+                # Verificar nuevamente si el cache existe (otro worker pudo haberlo creado)
+                if self.cache_enabled and os.path.exists(self.cache_file):
+                    try:
+                        print(f"Cargando cache de distancias (thread-safe): {self.cache_file}")
+                        self.distance_map = np.load(self.cache_file)
+                        print("✅ Cache de distancias cargado (thread-safe)")
+                        return
+                    except Exception as e:
+                        print(f"⚠️  Error cargando cache (thread-safe): {e}")
+                
+                # Calcular mapa de distancias
                 try:
-                    np.save(self.cache_file, self.distance_map)
-                    print(f"✅ Cache de distancias guardado: {self.cache_file}")
-                except Exception as e:
-                    print(f"⚠️  Error guardando cache: {e}")
+                    print("Calculando mapa de distancias...")
+                    # Crear máscara de agua (donde mask == 0, según convención: 0=agua, 1=tierra)
+                    water_mask = (self.mask == 0).astype(np.uint8)
                     
-        except Exception as e:
-            print(f"⚠️  Error calculando mapa de distancias: {e}")
-            self.distance_map = np.zeros_like(self.mask, dtype=np.uint16)
-            # No lanzar excepción, permitir que funcione con valores por defecto
+                    # Calcular transformada de distancia euclidiana
+                    distance_pixels = distance_transform_edt(water_mask)
+                    
+                    # Escalar para almacenamiento eficiente
+                    distance_scaled = (distance_pixels * self.scale_factor).astype(np.uint16)
+                    
+                    # Poner 0 en tierra (donde mask == 1)
+                    distance_scaled[self.mask == 1] = 0
+                    
+                    self.distance_map = distance_scaled
+                    
+                    if self.cache_enabled:
+                        try:
+                            np.save(self.cache_file, self.distance_map)
+                            print(f"✅ Cache de distancias guardado: {self.cache_file}")
+                        except Exception as e:
+                            print(f"⚠️  Error guardando cache: {e}")
+                            
+                except Exception as e:
+                    print(f"⚠️  Error calculando mapa de distancias: {e}")
+                    self.distance_map = np.zeros_like(self.mask, dtype=np.uint16)
+                    # No lanzar excepción, permitir que funcione con valores por defecto
+                    
+        except IOError:
+            # No se pudo adquirir el lock, esperar y reintentar
+            print("⏳ Esperando que otro worker termine de calcular el mapa de distancias...")
+            import time
+            time.sleep(1)
+            return self._compute_distance_map_safe()
     
     def distance_to_coast(self, lat, lon):
         if self.distance_map is None:

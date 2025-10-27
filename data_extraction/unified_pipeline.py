@@ -261,7 +261,7 @@ class UnifiedDataProcessingPipeline:
         )
     
     def _ensure_distance_cache(self):
-        """Verificar y regenerar cache de distancias si es necesario"""
+        """Verificar y regenerar cache de distancias si es necesario (THREAD-SAFE)"""
         if not self.config.enable_distance_calculation:
             return
         
@@ -271,44 +271,65 @@ class UnifiedDataProcessingPipeline:
             'distance_cache_global.npy'
         )
         
-        # Verificar si el cache existe y es válido
-        cache_valid = False
-        if os.path.exists(cache_file):
-            try:
-                import numpy as np
-                cache_data = np.load(cache_file)
-                # Verificar que el cache tiene las dimensiones correctas
-                if cache_data.shape == (4008, 8017):
-                    cache_valid = True
-                    if self.config.verbose:
-                        print(f"✅ Cache de distancias válido encontrado: {cache_file}")
-            except Exception as e:
-                if self.config.verbose:
-                    print(f"⚠️  Error verificando cache: {e}")
+        # Usar file locking para evitar regeneración simultánea
+        self._ensure_distance_cache_safe(cache_file)
+    
+    def _ensure_distance_cache_safe(self, cache_file):
+        """Implementación thread-safe del cache de distancias con file locking"""
+        import fcntl
         
-        # Regenerar cache si no es válido
-        if not cache_valid:
-            if self.config.verbose:
-                print("🔄 Regenerando cache de distancias...")
-            
-            try:
-                # Importar y crear instancia del DistanceCalculator para regenerar cache
-                from binary_clasifier.distance_calculator import DistanceCalculator
+        lock_file = cache_file + '.lock'
+        
+        # Intentar adquirir lock exclusivo
+        try:
+            with open(lock_file, 'w') as lock:
+                fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
                 
-                # Eliminar cache corrupto si existe
+                # Verificar si el cache existe y es válido
+                cache_valid = False
                 if os.path.exists(cache_file):
-                    os.remove(cache_file)
+                    try:
+                        import numpy as np
+                        cache_data = np.load(cache_file)
+                        # Verificar que el cache tiene las dimensiones correctas
+                        if cache_data.shape == (4008, 8017):
+                            cache_valid = True
+                            if self.config.verbose:
+                                print(f"✅ Cache de distancias válido encontrado: {cache_file}")
+                    except Exception as e:
+                        if self.config.verbose:
+                            print(f"⚠️  Error verificando cache: {e}")
                 
-                # Crear nueva instancia (esto regenerará el cache)
-                calculator = DistanceCalculator()
-                
-                if self.config.verbose:
-                    print("✅ Cache de distancias regenerado exitosamente")
+                # Regenerar cache si no es válido
+                if not cache_valid:
+                    if self.config.verbose:
+                        print("🔄 Regenerando cache de distancias...")
                     
-            except Exception as e:
-                if self.config.verbose:
-                    print(f"⚠️  Error regenerando cache: {e}")
-                # Continuar sin cache - el sistema funcionará pero será más lento
+                    try:
+                        # Importar y crear instancia del DistanceCalculator para regenerar cache
+                        from binary_clasifier.distance_calculator import DistanceCalculator
+                        
+                        # Eliminar cache corrupto si existe
+                        if os.path.exists(cache_file):
+                            os.remove(cache_file)
+                        
+                        # Crear nueva instancia (esto regenerará el cache)
+                        calculator = DistanceCalculator()
+                        
+                        if self.config.verbose:
+                            print("✅ Cache de distancias regenerado exitosamente")
+                            
+                    except Exception as e:
+                        if self.config.verbose:
+                            print(f"⚠️  Error regenerando cache: {e}")
+                            
+        except IOError:
+            # No se pudo adquirir el lock, esperar y reintentar
+            if self.config.verbose:
+                print("⏳ Esperando que otro worker termine de regenerar el cache...")
+            import time
+            time.sleep(1)
+            return self._ensure_distance_cache_safe(cache_file)
     
     def upload_data_to_api(self, camera_location_signal_id: str, data: Dict, sid: str) -> Dict:
         """
